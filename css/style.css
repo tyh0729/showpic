@@ -290,10 +290,18 @@ img { display: block; max-width: 100%; }
   .card-meta { font-size: .82rem; }
 }
 
+/* 從照片頁回來時，短暫標示剛才點的那張 */
+.card.is-target { animation: card-flash 2s ease; }
+@keyframes card-flash {
+  0%, 50% { box-shadow: 0 0 0 3px var(--accent), var(--shadow-hover); }
+  100% { box-shadow: var(--shadow); }
+}
+
 /* 減少動態效果 */
 @media (prefers-reduced-motion: reduce) {
   .card, .card-thumb img { transition: none; }
   .card:hover, .card:hover .card-thumb img { transform: none; }
+  .card.is-target { animation: none; box-shadow: 0 0 0 3px var(--accent); }
 }
 
 /* ===== 照片頁（新視窗） ===== */

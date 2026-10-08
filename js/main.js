@@ -47,13 +47,16 @@
     return li;
   }
 
-  function buildCard(p) {
+  function buildCard(p, key) {
     const card = template.content.cloneNode(true);
+    const item = card.querySelector(".card");
     const link = card.querySelector(".card-link");
     const img = card.querySelector("img");
 
     // 卡片上只顯示照片與拍照地點；名稱留給螢幕報讀與替代文字
-    link.href = "photo.html?id=" + encodeURIComponent(p.id);
+    // from = 目前所在的分類，照片頁的「回首頁」會依此回到原分類
+    item.dataset.id = p.id;
+    link.href = "photo.html?id=" + encodeURIComponent(p.id) + "&from=" + encodeURIComponent(key);
     link.setAttribute("aria-label", p.name + "，" + p.location + "（在新視窗開啟照片）");
     img.src = p.image;
     img.alt = p.name;
@@ -62,20 +65,35 @@
   }
 
   // 網址 #date=2026-01-11 顯示單一日期；其他（#all 或空白）顯示全部
-  function currentKey() {
-    const m = location.hash.match(/^#date=(\d{4}-\d{2}-\d{2})$/);
-    return m && groups[m[1]] ? "date=" + m[1] : "all";
+  // 後面可接 &item=p04：從照片頁回來時，捲到剛才點的那張
+  function parseHash() {
+    const parts = location.hash.slice(1).split("&");
+    const m = parts[0].match(/^date=(\d{4}-\d{2}-\d{2})$/);
+    let item = null;
+    parts.slice(1).forEach(function (kv) {
+      if (kv.indexOf("item=") === 0) item = decodeURIComponent(kv.slice(5));
+    });
+    return { key: m && groups[m[1]] ? "date=" + m[1] : "all", item: item };
   }
 
+  // 回傳是否有捲到指定的那張
   function render() {
-    const key = currentKey();
+    const state = parseHash();
+    const key = state.key;
     const shown = key === "all" ? dates : [key.slice(5)];
 
     const cards = [];
     shown.forEach(function (date) {
-      groups[date].forEach(function (p) { cards.push(buildCard(p)); });
+      groups[date].forEach(function (p) { cards.push(buildCard(p, key)); });
     });
     gallery.replaceChildren.apply(gallery, cards);
+
+    let target = null;
+    if (state.item) {
+      target = Array.prototype.find.call(gallery.children, function (li) {
+        return li.dataset.id === state.item;
+      });
+    }
 
     dateList.querySelectorAll(".date-link").forEach(function (a) {
       if (a.dataset.key === key) {
@@ -86,6 +104,13 @@
         a.removeAttribute("aria-current");
       }
     });
+
+    if (target) {
+      target.scrollIntoView({ block: "center" });
+      target.classList.add("is-target");
+      setTimeout(function () { target.classList.remove("is-target"); }, 2000);
+    }
+    return !!target;
   }
 
   dateList.appendChild(navItem("all", "全部照片", "", PRODUCTS.length));
@@ -94,8 +119,7 @@
   });
 
   window.addEventListener("hashchange", function () {
-    render();
-    window.scrollTo(0, 0);
+    if (!render()) window.scrollTo(0, 0);
   });
 
   render();
