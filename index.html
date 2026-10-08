@@ -10,13 +10,16 @@
 </head>
 <body>
   <div class="layout">
-    <aside class="sidebar">
+    <aside id="sidebar" class="sidebar">
       <h1 class="site-title"><a href="#all">商品照片集</a></h1>
       <nav class="date-nav" aria-label="依拍照日期分類">
-        <p class="nav-heading">拍照日期</p>
         <ul id="date-list" class="date-list"></ul>
       </nav>
     </aside>
+
+    <div id="resizer" class="resizer" role="separator" tabindex="0"
+         aria-orientation="vertical" aria-controls="sidebar"
+         aria-label="拖曳調整左欄寬度（雙擊恢復預設）" title="拖曳調整寬度，雙擊恢復預設"></div>
 
     <main class="content">
       <p class="content-sub">點選商品可在新視窗開啟照片</p>
@@ -58,5 +61,6 @@
 
   <script src="js/products.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/resizer.js"></script>
 </body>
 </html>

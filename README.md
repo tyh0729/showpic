@@ -5,11 +5,12 @@
 ## 檔案結構
 
 ```
-index.html            首頁（左側依拍照日期分類，右側格狀商品卡片）
+index.html            首頁（左側依拍照日期分類，右側格狀商品卡片；中間分隔線可拖曳調整寬度）
 photo.html            照片頁（點卡片後在新視窗開啟）
 css/style.css         樣式
 js/products.js        ★ 商品資料，新增／修改商品只改這裡
 js/main.js            產生首頁卡片
+js/resizer.js         左右分隔線拖曳
 js/photo.js           照片頁邏輯
 images/products/      商品照片，依拍照日期分資料夾
   2026-01-11/         ← 對應首頁左側的「2026/01/11」分類
