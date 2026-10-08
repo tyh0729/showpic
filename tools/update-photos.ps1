@@ -3,7 +3,7 @@
 
     Originals : images/products/<category>/<photo>     (category = folder name, e.g. 201907__)
     Thumbnails: images/thumbs/<category>/<name>.jpg     640x480, centre-cropped
-    Large     : images/web/<category>/<name>.jpg        long edge <= 2000px
+    Large     : images/web/<category>/<name>.jpg        long edge <= 1600px
     Data      : js/products.js                          only the PRODUCTS array is rewritten
 
   Generated images are rotated upright and carry no EXIF metadata (no GPS, camera, etc.).
@@ -13,12 +13,15 @@
   Usage, from the site folder:
     powershell -ExecutionPolicy Bypass -File tools\update-photos.ps1
     powershell -ExecutionPolicy Bypass -File tools\update-photos.ps1 -Geocode
-  -Geocode looks up a place name on OpenStreetMap (Nominatim) for new photos that have
-  real GPS coordinates; the coordinates are sent to that service.
+    powershell -ExecutionPolicy Bypass -File tools\update-photos.ps1 -Force
+  -Geocode looks up a place name on OpenStreetMap (Nominatim) for photos that have real
+  GPS coordinates and no location yet; the coordinates are sent to that service.
+  Taiwan -> "<city>.<district>", elsewhere -> "<country>.<city/town>".
+  -Force rebuilds every thumbnail and large image (e.g. after changing the sizes below).
 
   This file is kept ASCII-only so Windows PowerShell 5.1 reads it correctly.
 #>
-param([switch]$Geocode)
+param([switch]$Geocode, [switch]$Force)
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -31,7 +34,7 @@ $dataFile  = Join-Path $root 'js\products.js'
 $inv       = [Globalization.CultureInfo]::InvariantCulture
 $utf8      = New-Object Text.UTF8Encoding $false
 
-$WEB_MAX = 2000; $WEB_QUALITY = 82
+$WEB_MAX = 1600; $WEB_QUALITY = 80
 $THUMB_W = 640;  $THUMB_H = 480; $THUMB_QUALITY = 78
 $EXTENSIONS = @('.jpg', '.jpeg', '.png')
 $DOT = [string][char]0x30FB   # the dot used between place names
@@ -125,22 +128,26 @@ function Build-Images([IO.FileInfo]$file, [string]$webPath, [string]$thumbPath) 
 # ---------------------------------------------------------------- reverse geocoding
 $geoCache = @{}
 function Get-PlaceName([double]$lat, [double]$lon) {
-  $key = $lat.ToString('F3', $inv) + ',' + $lon.ToString('F3', $inv)
+  # ~1 km grid: nearby photos share one lookup (district-level names rarely differ inside it)
+  $key = $lat.ToString('F2', $inv) + ',' + $lon.ToString('F2', $inv)
   if ($geoCache.ContainsKey($key)) { return $geoCache[$key] }
   Start-Sleep -Milliseconds 1100   # Nominatim usage policy: at most 1 request per second
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-  $url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=zh-TW' +
+  $url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=zh-Hant,zh-TW,zh' +
          '&lat=' + $lat.ToString('F6', $inv) + '&lon=' + $lon.ToString('F6', $inv)
   $place = ''
   try {
     $resp = Invoke-WebRequest -UseBasicParsing -Uri $url -Headers @{ 'User-Agent' = 'showpic-photo-site/1.0 (personal photo gallery)' }
     $ms = New-Object IO.MemoryStream; $resp.RawContentStream.CopyTo($ms)
     $a = ([Text.Encoding]::UTF8.GetString($ms.ToArray()) | ConvertFrom-Json).address
-    if ($a) {
-      $big = @($a.state, $a.province, $a.city, $a.county) | Where-Object { $_ } | Select-Object -First 1
-      $small = @($a.city, $a.town, $a.city_district, $a.suburb, $a.district, $a.village) |
+    if ($a -and $a.country_code -eq 'tw') {
+      $big = @($a.city, $a.county, $a.state) | Where-Object { $_ } | Select-Object -First 1
+      $small = @($a.city_district, $a.district, $a.town, $a.suburb, $a.village) |
         Where-Object { $_ -and $_ -ne $big } | Select-Object -First 1
       $place = (@($big, $small) | Where-Object { $_ }) -join $DOT
+    } elseif ($a) {
+      $small = @($a.city, $a.town, $a.village, $a.municipality, $a.state) | Where-Object { $_ } | Select-Object -First 1
+      $place = (@($a.country, $small) | Where-Object { $_ }) -join $DOT
     }
   } catch { Write-Warning "Geocoding failed for one photo: $($_.Exception.Message)" }
   $geoCache[$key] = $place
@@ -204,10 +211,13 @@ foreach ($cat in Get-ChildItem -LiteralPath $srcRoot -Directory | Sort-Object Na
 
     $webPath = Join-Path (Join-Path $webRoot $cat.Name) $outName
     $thumbPath = Join-Path (Join-Path $thumbRoot $cat.Name) $outName
-    $fresh = (Test-Path -LiteralPath $webPath) -and (Test-Path -LiteralPath $thumbPath) -and
+    $fresh = (-not $Force) -and (Test-Path -LiteralPath $webPath) -and (Test-Path -LiteralPath $thumbPath) -and
       (Get-Item -LiteralPath $webPath).LastWriteTimeUtc -eq $f.LastWriteTimeUtc -and
       (Get-Item -LiteralPath $thumbPath).LastWriteTimeUtc -eq $f.LastWriteTimeUtc
-    if (-not $fresh) { Build-Images $f $webPath $thumbPath; $built++ }
+    if (-not $fresh) {
+      Build-Images $f $webPath $thumbPath; $built++
+      if ($built % 25 -eq 0) { Write-Host "  built $built images..." }
+    }
 
     # metadata (header only, no full decode)
     $fs = [IO.File]::OpenRead($f.FullName)
