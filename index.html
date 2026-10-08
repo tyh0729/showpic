@@ -9,21 +9,23 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="site-title">商品照片集</h1>
-      <p class="site-subtitle">點選商品可在新視窗開啟照片 <span id="count" class="count"></span></p>
-    </div>
-  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <h1 class="site-title"><a href="#all">商品照片集</a></h1>
+      <nav class="date-nav" aria-label="依拍照日期分類">
+        <p class="nav-heading">拍照日期</p>
+        <ul id="date-list" class="date-list"></ul>
+      </nav>
+    </aside>
 
-  <main class="container">
-    <ul id="gallery" class="gallery" aria-label="商品列表"></ul>
-    <noscript><p class="notice">此網站需要啟用 JavaScript 才能顯示商品。</p></noscript>
-  </main>
+    <main class="content">
+      <p class="content-sub">點選商品可在新視窗開啟照片</p>
+      <div id="gallery"></div>
+      <noscript><p class="notice">此網站需要啟用 JavaScript 才能顯示商品。</p></noscript>
 
-  <footer class="site-footer">
-    <div class="container">© <span id="year"></span> 商品照片集</div>
-  </footer>
+      <footer class="site-footer">© <span id="year"></span> 商品照片集</footer>
+    </main>
+  </div>
 
   <template id="card-template">
     <li class="card">
@@ -32,7 +34,7 @@
           <img loading="lazy" decoding="async" width="1200" height="900" alt="">
         </div>
         <div class="card-body">
-          <h2 class="card-title"></h2>
+          <h3 class="card-title"></h3>
           <dl class="card-meta">
             <div class="meta-row">
               <dt>

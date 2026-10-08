@@ -5,7 +5,7 @@
 ## 檔案結構
 
 ```
-index.html            首頁（格狀商品卡片）
+index.html            首頁（左側依拍照日期分類，右側格狀商品卡片）
 photo.html            照片頁（點卡片後在新視窗開啟）
 css/style.css         樣式
 js/products.js        ★ 商品資料，新增／修改商品只改這裡
