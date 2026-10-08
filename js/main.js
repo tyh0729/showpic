@@ -51,37 +51,14 @@
     const card = template.content.cloneNode(true);
     const link = card.querySelector(".card-link");
     const img = card.querySelector("img");
-    const time = card.querySelector(".card-date");
 
+    // 卡片上只顯示照片與拍照地點；名稱留給螢幕報讀與替代文字
     link.href = "photo.html?id=" + encodeURIComponent(p.id);
-    link.setAttribute("aria-label", p.name + "（在新視窗開啟照片）");
+    link.setAttribute("aria-label", p.name + "，" + p.location + "（在新視窗開啟照片）");
     img.src = p.image;
     img.alt = p.name;
-    card.querySelector(".card-title").textContent = p.name;
-    time.dateTime = p.date;
-    time.textContent = formatDate(p.date);
     card.querySelector(".card-location").textContent = p.location;
     return card;
-  }
-
-  function buildSection(date) {
-    const section = document.createElement("section");
-    section.className = "date-section";
-
-    const h2 = document.createElement("h2");
-    h2.className = "section-title";
-    h2.textContent = formatDate(date) + weekday(date);
-    const count = document.createElement("span");
-    count.className = "section-count";
-    count.textContent = groups[date].length + " 張";
-    h2.appendChild(count);
-
-    const ul = document.createElement("ul");
-    ul.className = "gallery";
-    groups[date].forEach(function (p) { ul.appendChild(buildCard(p)); });
-
-    section.append(h2, ul);
-    return section;
   }
 
   // 網址 #date=2026-01-11 顯示單一日期；其他（#all 或空白）顯示全部
@@ -94,7 +71,11 @@
     const key = currentKey();
     const shown = key === "all" ? dates : [key.slice(5)];
 
-    gallery.replaceChildren.apply(gallery, shown.map(buildSection));
+    const cards = [];
+    shown.forEach(function (date) {
+      groups[date].forEach(function (p) { cards.push(buildCard(p)); });
+    });
+    gallery.replaceChildren.apply(gallery, cards);
 
     dateList.querySelectorAll(".date-link").forEach(function (a) {
       if (a.dataset.key === key) {

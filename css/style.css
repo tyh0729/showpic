@@ -178,20 +178,6 @@ img { display: block; max-width: 100%; }
   min-width: 0;
   padding: 30px clamp(16px, 3vw, 40px) 0;
 }
-.content-sub { margin: 0 0 20px; color: var(--muted); font-size: .9rem; }
-
-.date-section + .date-section { margin-top: 40px; }
-.section-title {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin: 0 0 14px;
-  font-size: 1.2rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.section-count { font-size: .8rem; font-weight: 400; color: var(--muted); }
-
 .site-footer {
   margin-top: 48px;
   padding: 24px 0 32px;
@@ -247,19 +233,12 @@ img { display: block; max-width: 100%; }
 }
 .card:hover .card-thumb img { transform: scale(1.04); }
 
-.card-body { padding: 12px 14px 14px; }
+.card-body { padding: 10px 14px 12px; }
 
-.card-title {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.card-meta { margin: 0; font-size: .875rem; color: var(--muted); }
+/* 卡片只顯示拍照地點 */
+.card-meta { margin: 0; font-size: .9rem; }
 .meta-row { display: flex; align-items: flex-start; gap: 6px; }
-.meta-row + .meta-row { margin-top: 2px; }
-.card-meta dt { flex: none; display: flex; padding-top: .2em; }
+.card-meta dt { flex: none; display: flex; padding-top: .25em; color: var(--muted); }
 .card-meta dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 
 .icon {
@@ -302,17 +281,13 @@ img { display: block; max-width: 100%; }
   .date-link[aria-current="page"] { border-color: var(--accent); }
   .date-week { display: none; }
   .content { padding: 16px 16px 0; }
-  .content-sub { margin-bottom: 14px; font-size: .85rem; }
-  .date-section + .date-section { margin-top: 28px; }
-  .section-title { font-size: 1.05rem; margin-bottom: 10px; }
 }
 
 /* 手機：固定兩欄，縮小間距 */
 @media (max-width: 560px) {
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .card-body { padding: 10px 10px 12px; }
-  .card-title { font-size: .95rem; }
-  .card-meta { font-size: .8rem; }
+  .card-body { padding: 8px 10px 10px; }
+  .card-meta { font-size: .82rem; }
 }
 
 /* 減少動態效果 */

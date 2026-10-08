@@ -22,8 +22,7 @@
          aria-label="拖曳調整左欄寬度（雙擊恢復預設）" title="拖曳調整寬度，雙擊恢復預設"></div>
 
     <main class="content">
-      <p class="content-sub">點選商品可在新視窗開啟照片</p>
-      <div id="gallery"></div>
+      <ul id="gallery" class="gallery" aria-label="商品列表"></ul>
       <noscript><p class="notice">此網站需要啟用 JavaScript 才能顯示商品。</p></noscript>
 
       <footer class="site-footer">© <span id="year"></span> 商品照片集</footer>
@@ -37,15 +36,7 @@
           <img loading="lazy" decoding="async" width="1200" height="900" alt="">
         </div>
         <div class="card-body">
-          <h3 class="card-title"></h3>
           <dl class="card-meta">
-            <div class="meta-row">
-              <dt>
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-                <span class="sr-only">拍照日期</span>
-              </dt>
-              <dd><time class="card-date"></time></dd>
-            </div>
             <div class="meta-row">
               <dt>
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
