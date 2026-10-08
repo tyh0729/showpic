@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>商品照片</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="viewer">
+  <header class="viewer-bar">
+    <a class="viewer-btn" href="index.html">← 回首頁</a>
+    <button type="button" id="close" class="viewer-btn">關閉視窗 ✕</button>
+  </header>
+
+  <main class="viewer-stage">
+    <img id="photo" class="viewer-photo" alt="">
+    <p id="not-found" class="viewer-empty" hidden>找不到這個商品。</p>
+  </main>
+
+  <footer class="viewer-caption" id="caption">
+    <h1 id="name" class="viewer-title"></h1>
+    <p class="viewer-meta">
+      <span>拍照日期：<time id="date"></time></span>
+      <span>拍照地點：<span id="location"></span></span>
+    </p>
+  </footer>
+
+  <script src="js/products.js"></script>
+  <script src="js/photo.js"></script>
+</body>
+</html>

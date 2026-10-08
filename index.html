@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>商品照片集</title>
+  <meta name="description" content="商品照片集：拍照日期與拍照地點一覽。">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">商品照片集</h1>
+      <p class="site-subtitle">點選商品可在新視窗開啟照片 <span id="count" class="count"></span></p>
+    </div>
+  </header>
+
+  <main class="container">
+    <ul id="gallery" class="gallery" aria-label="商品列表"></ul>
+    <noscript><p class="notice">此網站需要啟用 JavaScript 才能顯示商品。</p></noscript>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">© <span id="year"></span> 商品照片集</div>
+  </footer>
+
+  <template id="card-template">
+    <li class="card">
+      <a class="card-link" target="_blank" rel="noopener">
+        <div class="card-thumb">
+          <img loading="lazy" decoding="async" width="1200" height="900" alt="">
+        </div>
+        <div class="card-body">
+          <h2 class="card-title"></h2>
+          <dl class="card-meta">
+            <div class="meta-row">
+              <dt>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                <span class="sr-only">拍照日期</span>
+              </dt>
+              <dd><time class="card-date"></time></dd>
+            </div>
+            <div class="meta-row">
+              <dt>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                <span class="sr-only">拍照地點</span>
+              </dt>
+              <dd class="card-location"></dd>
+            </div>
+          </dl>
+        </div>
+      </a>
+    </li>
+  </template>
+
+  <script src="js/products.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
