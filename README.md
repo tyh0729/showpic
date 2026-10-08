@@ -5,31 +5,38 @@
 ## 檔案結構
 
 ```
-index.html            首頁（左側依拍照日期分類，右側格狀商品卡片；中間分隔線可拖曳調整寬度）
+index.html            首頁（左側分類，右側格狀商品卡片；中間分隔線可拖曳調整寬度）
 photo.html            照片頁（點卡片後在新視窗開啟）
 css/style.css         樣式
-js/products.js        ★ 商品資料，新增／修改商品只改這裡
+js/products.js        商品資料（由工具產生，可手動修改名稱、日期、地點）
 js/main.js            產生首頁卡片
 js/resizer.js         左右分隔線拖曳
 js/photo.js           照片頁邏輯
-images/products/      商品照片，依拍照日期分資料夾
-  2026-01-11/         ← 對應首頁左側的「2026/01/11」分類
-  2026-01-12/
-  ...
+tools/update-photos.ps1  由原檔產生縮圖、大圖與 products.js
+images/products/      ★ 照片原檔，依分類分資料夾（只留在本機，不上傳 GitHub）
+  201907__/           ← 首頁左側顯示「2019/07」
+  20190701/           ← 首頁左側顯示「2019/07/01（一）」
+images/thumbs/        首頁縮圖（640×480，工具產生）
+images/web/           照片頁大圖（長邊 2000px，工具產生）
 ```
 
-## 換成真的照片
+## 新增或更換照片
 
-1. 把照片放進 `images/products/<拍照日期>/`，資料夾名稱格式為 `YYYY-MM-DD`；沒有的日期就新建一個資料夾。
-2. 打開 `js/products.js`，修改對應商品的 `date`、`file`（只寫檔名）、`location`、`name`。
-   - 照片路徑會自動組成 `images/products/<date>/<file>`，所以 `date` 要和照片所在的資料夾一致。
-   - 若新照片直接用 `product-01.jpg` 這類檔名覆蓋，`file` 就不用改。
-3. 新增商品：在 `PRODUCTS` 裡多加一行，`id` 不可重複。
+1. 把照片原檔放進 `images/products/<分類資料夾>/`，資料夾名稱就是左側的分類。
+2. 在這個資料夾執行：
+
+   ```bash
+   powershell -ExecutionPolicy Bypass -File tools\update-photos.ps1
+   ```
+
+   - 依 EXIF 轉正，產生縮圖與大圖，並移除 EXIF（含 GPS、相機型號等）。
+   - 更新 `js/products.js`：新照片自動加入（日期取自 EXIF），刪掉的照片自動移除；
+     已經存在的項目會保留你改過的 `name`、`date`、`location`。
+   - 加上 `-Geocode` 會用照片的 GPS 向 OpenStreetMap 查地名（座標會送到該服務）。
+3. 打開 `js/products.js` 填寫 `location`（拍照地點）；空白時卡片不顯示地點。
 
 路徑一律是相對路徑，不要以 `/` 開頭，
 否則部署到 `https://<帳號>.github.io/<repo>/` 時會找不到圖片。
-
-建議照片長邊縮到 1600–2000px、存成品質約 80% 的 JPG，載入會快很多。
 
 ## 部署到 GitHub Pages
 

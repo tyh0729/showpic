@@ -4,9 +4,11 @@
   const id = params.get("id");
   const p = PRODUCTS.find(function (item) { return item.id === id; });
 
-  // 「回首頁」回到點進來時的分類（from=all 或 from=date=YYYY-MM-DD），並捲到這張照片
-  const from = params.get("from");
-  let backUrl = "index.html#" + (/^(all|date=\d{4}-\d{2}-\d{2})$/.test(from || "") ? from : "all");
+  // 「回首頁」回到點進來時的分類（from=all 或 from=cat=<資料夾>），並捲到這張照片
+  const from = params.get("from") || "";
+  const fromFolder = from.indexOf("cat=") === 0 ? from.slice(4) : "";
+  const known = PRODUCTS.some(function (item) { return item.folder === fromFolder; });
+  let backUrl = "index.html#" + (known ? "cat=" + encodeURIComponent(fromFolder) : "all");
   if (p) backUrl += "&item=" + encodeURIComponent(p.id);
   document.getElementById("back").href = backUrl;
 
@@ -24,7 +26,11 @@
     document.getElementById("name").textContent = p.name;
     time.dateTime = p.date;
     time.textContent = p.date.replace(/-/g, "/");
-    document.getElementById("location").textContent = p.location;
+    if (p.location) {
+      document.getElementById("location").textContent = p.location;
+    } else {
+      document.getElementById("location-row").hidden = true;
+    }
   }
 
   // 「回首頁」和「關閉視窗」都先關掉這個新視窗，回到原本的首頁視窗；

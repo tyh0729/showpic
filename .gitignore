@@ -1,0 +1,2 @@
+# 照片原檔只留在本機；網站使用 tools/update-photos.ps1 產生的 images/thumbs 與 images/web
+images/products/
